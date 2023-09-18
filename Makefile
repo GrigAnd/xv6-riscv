@@ -89,6 +89,17 @@ tags: $(OBJS) _init
 
 ULIB = $U/ulib.o $U/usys.o $U/printf.o $U/umalloc.o
 
+$U/dumptests.S.o : $U/dumptests.S
+	$(CC) $(CFLAGS) -c -o $U/dumptests.S.o $U/dumptests.S
+
+$U/dump2tests.S.o : $U/dump2tests.S
+	$(CC) $(CFLAGS) -c -o $U/dump2tests.S.o $U/dump2tests.S
+
+_%: %.o %.S.o $(ULIB)
+	$(LD) $(LDFLAGS) -T $U/user.ld -o $@ $^
+	$(OBJDUMP) -S $@ > $*.asm
+	$(OBJDUMP) -t $@ | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $*.sym
+
 _%: %.o $(ULIB)
 	$(LD) $(LDFLAGS) -T $U/user.ld -o $@ $^
 	$(OBJDUMP) -S $@ > $*.asm
@@ -133,6 +144,8 @@ UPROGS=\
 	$U/_wc\
 	$U/_zombie\
 	$U/_pingpong\
+	$U/_dumptests\
+	$U/_dump2tests\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

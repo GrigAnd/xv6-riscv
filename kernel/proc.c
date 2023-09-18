@@ -681,3 +681,11 @@ procdump(void)
     printf("\n");
   }
 }
+
+void dump(void){
+  struct proc *curr_proc = myproc();
+  
+  for (int i = 0; i < 10; i++) {
+    printf("s%d = %d\n", i + 2, *(&(curr_proc->trapframe->s2) + i));
+  }
+}
