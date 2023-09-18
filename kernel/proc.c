@@ -689,3 +689,31 @@ void dump(void){
     printf("s%d = %d\n", i + 2, *(&(curr_proc->trapframe->s2) + i));
   }
 }
+
+int dump2(int pid, int register_num, uint64 *return_value){
+  if (register_num < 2 || register_num > 11) {
+    return -3;
+  }
+  
+  struct proc *p;
+  struct proc *curr_proc = myproc();
+
+  for (p = proc; p < &proc[NPROC]; p++) {
+    if (p->pid == pid) {
+
+      if (p != curr_proc && p->parent != curr_proc) {
+        return -1;
+      }
+
+      uint64 v = *(&(p->trapframe->s2) + register_num - 2);
+
+      if (copyout(curr_proc->pagetable, *return_value, (char *)&v, sizeof(uint64)) < 0) {
+        return -4;
+      }
+
+      return 0;
+    }
+  }
+
+  return -2;
+}
