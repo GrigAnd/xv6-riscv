@@ -700,10 +700,6 @@ void dump(void){
 }
 
 int dump2(int pid, int register_num, uint64 *return_value){
-  if (register_num < 2 || register_num > 11) {
-    return -3;
-  }
-  
   struct proc *p;
   struct proc *curr_proc = myproc();
 
@@ -714,7 +710,42 @@ int dump2(int pid, int register_num, uint64 *return_value){
         return -1;
       }
 
-      uint64 v = *(&(p->trapframe->s2) + register_num - 2);
+      uint64 v;
+
+      switch (register_num) {
+        case 2:
+          v = p->trapframe->s2;
+          break;
+        case 3:
+          v = p->trapframe->s3;
+          break;
+        case 4:
+          v = p->trapframe->s4;
+          break;
+        case 5:
+          v = p->trapframe->s5;
+          break;
+        case 6:
+          v = p->trapframe->s6;
+          break;
+        case 7:
+          v = p->trapframe->s7;
+          break;
+        case 8:
+          v = p->trapframe->s8;
+          break;
+        case 9:
+          v = p->trapframe->s9;
+          break;
+        case 10:
+          v = p->trapframe->s10;
+          break;
+        case 11:
+          v = p->trapframe->s11;
+          break;
+         default:
+          return -3;
+      }
 
       if (copyout(curr_proc->pagetable, *return_value, (char *)&v, sizeof(uint64)) < 0) {
         return -4;
